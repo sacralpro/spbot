@@ -1,16 +1,15 @@
 import telebot
 from telebot import types
 
-TOKEN = '7813062295:AAFseqWrP3NwmCSdhGQ8TmJwA1Zjk-At0oI'  # Replace with your bot's token
-
+TOKEN = '7813062295:AAFseqWrP3NwmCSdhGQ8TmJwA1Zjk-At0oI'  # Replace with you r bot's token
 
 bot = telebot.TeleBot(TOKEN)
 
-# Global variables to store user language preferences and order details
+# Глобальные переменные для хранения языковых предпочтений и условий заказов пользователей
 user_language = {}
 order_details = {}
 
-# Replace with your Telegram User ID
+# Замените на ваш Telegram User ID
 YOUR_USER_ID = 653154396 
 
 @bot.message_handler(commands=['start'])
@@ -24,7 +23,7 @@ def start(message):
 @bot.message_handler(func=lambda message: message.text in ['Русский', 'English'])
 def set_language(message):
     user_language[message.chat.id] = message.text
-    order_details[message.chat.id] = {}  # Initialize order details for the user
+    order_details[message.chat.id] = {}  # Инициализация деталей заказа для пользователя
 
     if message.text == 'Русский':
         reply_markup = create_menu_ru()
@@ -39,7 +38,7 @@ def create_menu_en():
     item2 = types.KeyboardButton(text='Order Website')
     item3 = types.KeyboardButton(text='Order Mobile App')
     item4 = types.KeyboardButton(text='Free Consultation')
-    item5 = types.KeyboardButton(text='Order Telegram Bot')  # Added new option
+    item5 = types.KeyboardButton(text='Order Telegram Bot')  # Добавлена новая опция
     markup.add(item1, item2, item3, item4, item5)
     return markup
 
@@ -49,7 +48,7 @@ def create_menu_ru():
     item2 = types.KeyboardButton(text='Заказать сайт')
     item3 = types.KeyboardButton(text='Заказать мобильное приложение')
     item4 = types.KeyboardButton(text='Бесплатная консультация')
-    item5 = types.KeyboardButton(text='Заказать Телеграм Бот')  # Added new option
+    item5 = types.KeyboardButton(text='Заказать Телеграм Бот')  # Добавлена новая опция
     markup.add(item1, item2, item3, item4, item5)
     return markup
 
@@ -66,8 +65,8 @@ def menu_response(message):
             ask_name(message, lang, is_mobile_app=True)
         elif message.text == 'Free Consultation':
             ask_name_for_consultation(message, lang)
-        elif message.text == 'Order Telegram Bot':  # Handle the new option
-            ask_bot_type(message, lang)
+        elif message.text == 'Order Telegram Bot':
+            ask_bot_type(message, lang)  # Запрос типа бота
 
     elif lang == 'Русский':
         if message.text == 'Заказать сайт':
@@ -78,13 +77,14 @@ def menu_response(message):
             ask_name(message, lang, is_mobile_app=True)
         elif message.text == 'Бесплатная консультация':
             ask_name_for_consultation(message, lang)
-        elif message.text == 'Заказать Телеграм Бот':  # Handle the new option
-            ask_bot_type(message, lang)
+        elif message.text == 'Заказать Телеграм Бот':
+            ask_bot_type(message, lang)  # Запрос типа бота
 
+# Запрос типа бота
 def ask_bot_type(message, lang):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    standard_bot_button = types.KeyboardButton(text='Standard Bot (up to 4 menu items)')  # Changed to English
-    unique_bot_button = types.KeyboardButton(text='Unique Bot')  # Changed to English
+    standard_bot_button = types.KeyboardButton(text='Standard Bot (up to 4 menu items)')  # Добавлено на английском
+    unique_bot_button = types.KeyboardButton(text='Unique Bot')  # Добавлено на английском
     markup.add(standard_bot_button, unique_bot_button)
 
     bot.send_message(message.chat.id, "Please choose the type of bot:", reply_markup=markup)
@@ -95,14 +95,14 @@ def handle_bot_type_selection(message, lang):
         if message.text == 'Стандартный бот (до 4 пунктов меню)':
             ask_name_for_standard_bot(message, lang)
         elif message.text == 'Уникальный бот':
-            bot.send_message(message.chat.id, "Ок, наш специалист свяжется с Вами.")  # Confirmation for unique bot in Russian
-            start(message)  # Return to start
+            bot.send_message(message.chat.id, "Ок, наш специалист свяжется с Вами.")  # Подтверждение для уникального бота
+            start(message)  # Возврат к началу
     else:  # English
         if message.text == 'Standard Bot (up to 4 menu items)':
             ask_name_for_standard_bot(message, lang)
         elif message.text == 'Unique Bot':
-            bot.send_message(message.chat.id, "Okay, our specialist will contact you.")  # Confirmation for unique bot in English
-            start(message)  # Return to start
+            bot.send_message(message.chat.id, "Okay, our specialist will contact you.")  # Подтверждение для уникального бота
+            start(message)  # Возврат к началу
 
 def ask_name_for_standard_bot(message, lang):
     prompt = "Как вас зовут?" if lang == 'Русский' else "What is your name?"
@@ -113,8 +113,7 @@ def process_name_for_standard_bot(message, lang):
     user_name = message.text
     order_details[message.chat.id]['name'] = user_name
 
-    # Updated prompt for bot logic
-    idea_prompt = "Опишите логику вашего бота (например: “В боте должно быть 3 кнопки меню(О компании, наши услуги, контакты), Услуги: заказать веб-сайт, заказать моб-приложение) и так далее.." if lang == 'Русский' else "Describe the logic of your bot (for example: “The bot should have 3 menu buttons (About Us, Our Services, Contact), Services: order a website, order a mobile app, etc..)"
+    idea_prompt = "Опишите логику вашего бота (например: “В боте должно быть 3 кнопки меню (О компании, наши услуги, контакты). Услуги: заказать веб-сайт, заказать мобильное приложение и так далее..)" if lang == 'Русский' else "Describe the logic of your bot (for example: 'The bot should have 3 menu buttons (About Us, Our Services, Contact), Services: order a website, order a mobile app, etc.)"
     bot.send_message(message.chat.id, idea_prompt)
     bot.register_next_step_handler(message, process_logic_for_standard_bot, lang)
 
@@ -122,7 +121,6 @@ def process_logic_for_standard_bot(message, lang):
     order_details[message.chat.id]['logic'] = message.text
     user_name = order_details[message.chat.id]['name']
 
-    # Confirmation message
     if lang == 'Русский':
         confirmation_message = "Благодарим, предварительная стоимость бота $50. Наш специалист свяжется с Вами."
     else:
@@ -130,11 +128,11 @@ def process_logic_for_standard_bot(message, lang):
 
     bot.send_message(message.chat.id, confirmation_message)
 
-    # Send order details to the admin
-    admin_message = f"Новый заказ от @{message.from_user.username}:\nИмя: {user_name}\nЛогика бота: {message.text}"
+    # Уведомление администратору
+    admin_message = f"Новый заказ от @{message.from_user.username}:\nИмя: {user_name}\nЛогика бота: {message.text}" if lang == 'Русский' else f"New order from @{message.from_user.username}:\nName: {user_name}\nBot Logic: {message.text}"
     bot.send_message(YOUR_USER_ID, admin_message)
 
-    start(message)  # Return to start
+    start(message)  # Возврат к началу
 
 def ask_name_for_consultation(message, lang):
     prompt = "Как вас зовут?" if lang == 'Русский' else "What is your name?"
@@ -153,21 +151,14 @@ def process_question_for_consultation(message, user_name, lang):
     user_question = message.text
     order_details[message.chat.id]['question'] = user_question
 
-    # Send the admin the consultation request
-    admin_message = f"Запрос на бесплатную консультацию от @{message.from_user.username}:\nИмя: {user_name}\nВопрос: {user_question}"
-    
-    # Send notification to admin
+    # Уведомление администратору о запросе
+    admin_message = f"Запрос на бесплатную консультацию от @{message.from_user.username}:\nИмя: {user_name}\nВопрос: {user_question}" if lang == 'Русский' else f"Free consultation request from @{message.from_user.username}:\nName: {user_name}\nQuestion: {user_question}"
     bot.send_message(YOUR_USER_ID, admin_message)
 
-    # Confirmation message to the user
-    if lang == 'Русский':
-        bot.send_message(message.chat.id, "Ваш запрос на консультацию принят! Мы свяжемся с вами в ближайшее время.")
-    else:
-        bot.send_message(message.chat.id, "Your consultation request has been accepted! We will contact you soon.")
-    
-    start(message)  # Return to start
+    bot.send_message(message.chat.id, "Ваш запрос на консультацию принят! Мы свяжемся с вами в ближайшее время." if lang == 'Русский' else "Your consultation request has been accepted! We will contact you shortly.")
+    start(message)  # Возврат к началу
 
-@bot.message_handler(func=lambda message: message.text in ['Order Mobile App', 'Заказать мобильное приложение'])
+@bot.message_handler(func=lambda message: message.text in ['Заказать мобильное приложение'])
 def process_mobile_app_order(message):
     lang = user_language[message.chat.id]
     ask_name(message, lang, is_mobile_app=True)
@@ -179,7 +170,6 @@ def ask_name(message, lang, is_mobile_app=False):
 
 def process_name(message, lang, is_mobile_app):
     order_details[message.chat.id]['name'] = message.text
-    # Updated prompt for app idea
     idea_prompt = "Опишите идею вашего приложения?" if lang == 'Русский' else "Please describe your app idea:"
     bot.send_message(message.chat.id, idea_prompt)
     bot.register_next_step_handler(message, process_idea, lang, is_mobile_app)
@@ -188,25 +178,20 @@ def process_idea(message, lang, is_mobile_app):
     order_details[message.chat.id]['idea'] = message.text
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton(text='1 неделя+') if lang == 'Русский' else types.KeyboardButton(text='1 week')
-    item2 = types.KeyboardButton(text='1 месяц+') if lang == 'Русский' else types.KeyboardButton(text='1 month')
+    item1 = types.KeyboardButton(text='1 неделя+') if lang == 'Русский' else types.KeyboardButton(text='1 week+')
+    item2 = types.KeyboardButton(text='1 месяц+') if lang == 'Русский' else types.KeyboardButton(text='1 month+')
     item3 = types.KeyboardButton(text='Больше 1 месяца') if lang == 'Русский' else types.KeyboardButton(text='More than 1 month')
     markup.add(item1, item2, item3)
 
-    if lang == 'Русский':
-        bot.send_message(message.chat.id, "Желаемые сроки?", reply_markup=markup)
-    else:
-        bot.send_message(message.chat.id, "Desired deadlines?", reply_markup=markup)
-
+    bot.send_message(message.chat.id, "Желаемые сроки?" if lang == 'Русский' else "Desired deadlines?", reply_markup=markup)
     bot.register_next_step_handler(message, process_deadline, lang, is_mobile_app)
 
 def process_deadline(message, lang, is_mobile_app):
     order_details[message.chat.id]['deadline'] = message.text
 
     budget_prompt = "Выберите бюджет:\n$1000\n$3000\n$5000\n$10000" if lang == 'Русский' else "Choose your budget:\n$1000\n$3000\n$5000\n$10000"
-    
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    budget_options = ['$1000+', '$3000+', '$5000+', '$10000+']  # Corrected budget options
+    budget_options = ['$1000+', '$3000+', '$5000+', '$10000+']  # Исправленные варианты бюджета
 
     for option in budget_options:
         button = types.KeyboardButton(text=option)
@@ -219,34 +204,31 @@ def process_budget(message, lang, is_mobile_app):
     order_details[message.chat.id]['budget'] = message.text
 
     user_name = order_details[message.chat.id]['name']
-    user_username = message.from_user.username  # Get user's @username
-    app_idea = order_details[message.chat.id]['idea']  # Updated for app
+    user_username = message.from_user.username  # Получение @username пользователя
+    app_idea = order_details[message.chat.id]['idea']  # Обновлено для приложения
     deadline = order_details[message.chat.id]['deadline']
     budget = order_details[message.chat.id]['budget']
 
-    # Admin notification
-    if lang == 'Русский':
-        admin_message = f"Новый заказ от @{user_username}:\n" \
-                        f"Имя: {user_name}\n" \
-                        f"Идея приложения: {app_idea}\n" \
-                        f"Желаемые сроки: {deadline}\n" \
-                        f"Бюджет: {budget}"
-        confirmation_message = "Ваш заказ принят! Мы свяжемся с вами в ближайшее время."  # Confirmation message in Russian
-    else:
-        admin_message = f"New order from @{user_username}:\n" \
-                        f"Name: {user_name}\n" \
-                        f"App idea: {app_idea}\n" \
-                        f"Desired deadlines: {deadline}\n" \
-                        f"Budget: {budget}"
-        confirmation_message = "Your order has been accepted! We will contact you soon."  # Confirmation message in English
+    # Уведомление администратору
+    admin_message = f"Новый заказ от @{user_username}:\n" \
+                    f"Имя: {user_name}\n" \
+                    f"Идея приложения: {app_idea}\n" \
+                    f"Желаемые сроки: {deadline}\n" \
+                    f"Бюджет: {budget}" if lang == 'Русский' else f"New order from @{user_username}:\n" \
+                    f"Name: {user_name}\n" \
+                    f"Idea for the app: {app_idea}\n" \
+                    f"Desired deadlines: {deadline}\n" \
+                    f"Budget: {budget}"
 
-    # Sending notification to admin
+    confirmation_message = "Ваш заказ принят! Мы свяжемся с вами в ближайшее время." if lang == 'Русский' else "Your order has been accepted! We will contact you soon."  # Сообщение-подтверждение
+
+    # Отправка уведомления админу
     bot.send_message(YOUR_USER_ID, admin_message)
 
-    # Confirmation message to the user
+    # Подтверждение заказа пользователю
     bot.send_message(message.chat.id, confirmation_message)
 
-    start(message)  # Return to start
+    start(message)  # Возврат к началу
 
-# Start the bot polling
+# Запускаем бота
 bot.polling()
