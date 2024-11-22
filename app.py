@@ -83,11 +83,19 @@ def menu_response(message):
 # Запрос типа бота
 def ask_bot_type(message, lang):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    standard_bot_button = types.KeyboardButton(text='Standard Bot (up to 4 menu items)')  # Добавлено на английском
-    unique_bot_button = types.KeyboardButton(text='Unique Bot')  # Добавлено на английском
-    markup.add(standard_bot_button, unique_bot_button)
-
-    bot.send_message(message.chat.id, "Please choose the type of bot:", reply_markup=markup)
+    
+    # Добавляем кнопки в зависимости от языка
+    if lang == 'Русский':
+        standard_bot_button = types.KeyboardButton(text='Стандартный бот (до 4 пунктов меню)')
+        unique_bot_button = types.KeyboardButton(text='Уникальный бот')
+        markup.add(standard_bot_button, unique_bot_button)
+        bot.send_message(message.chat.id, "Пожалуйста, выберите тип бота:", reply_markup=markup)
+    else:
+        standard_bot_button = types.KeyboardButton(text='Standard Bot (up to 4 menu items)')
+        unique_bot_button = types.KeyboardButton(text='Unique Bot')
+        markup.add(standard_bot_button, unique_bot_button)
+        bot.send_message(message.chat.id, "Please choose the type of bot:", reply_markup=markup)
+    
     bot.register_next_step_handler(message, handle_bot_type_selection, lang)
 
 def handle_bot_type_selection(message, lang):
