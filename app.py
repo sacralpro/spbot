@@ -171,16 +171,26 @@ def process_mobile_app_order(message):
     lang = user_language[message.chat.id]
     ask_name(message, lang, is_mobile_app=True)
 
+
+
 def ask_name(message, lang, is_mobile_app=False):
     prompt = "Ваше Имя?" if lang == 'Русский' else "What is your name?"
     bot.send_message(message.chat.id, prompt)
     bot.register_next_step_handler(message, process_name, lang, is_mobile_app)
 
+#Corrected process_name function:
 def process_name(message, lang, is_mobile_app):
     order_details[message.chat.id]['name'] = message.text
-    idea_prompt = "Опишите идею вашего приложения?" if lang == 'Русский' else "Please describe your app idea:"
+
+    if is_mobile_app:
+        idea_prompt = "Опишите идею вашего приложения?" if lang == 'Русский' else "Please describe your app idea:"
+    else: #Added an else statement to handle website orders.
+        idea_prompt = "Опишите идею вашего сайта?" if lang == 'Русский' else "Please describe your website idea:"
+
+
     bot.send_message(message.chat.id, idea_prompt)
     bot.register_next_step_handler(message, process_idea, lang, is_mobile_app)
+
 
 def process_idea(message, lang, is_mobile_app):
     order_details[message.chat.id]['idea'] = message.text
